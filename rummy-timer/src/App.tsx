@@ -1,53 +1,96 @@
-import { useEffect, useState } from 'react'
-import reactLogo from './assets/react.svg'
+import { useEffect, useRef, useState } from 'react'
 import './App.css'
 
 function App() {
-  const TIME = 60
+  const TIME = 60 * 1000 + 999
 
-  const [timer, setTimer] = useState(TIME)
+  const COLORS = ["red", "green", "blue", "orange"]
+
+  const [currTime, setCurrTime] = useState(TIME)
   const [playing, setPlaying] = useState(false)
-  const [intervalId, setIntervalId] = useState<number>()
 
-  function startTimer() {
-    setIntervalId(setInterval(() => {
-      setTimer(timer => timer-1)
-    }, 1000))
+  const intervalID = useRef<number>() 
+
+  const [currentPlayer, setCurrentPlayer] = useState(0)
+  const [totalPlayers, setTotalPlayers] = useState(4)
+
+  useEffect(() => {
+    if (playing) {
+      if (currTime <= 999) {
+        setPlaying(false)
+      }
+      
+      let startTime = Date.now()
+      intervalID.current = setInterval(() => {              
+        setCurrTime(currTime => currTime - (Date.now() - startTime))
+      })
+      return () => clearInterval(intervalID.current)
+    }
+  }, [currTime])
+
+  function resetTimer() {
+    clearInterval(intervalID.current)
+    setCurrTime(TIME)
   }
   
   useEffect(() => {
     if (playing) {
-      if (timer == 0) {
-        setTimer(TIME)
-      }
-      startTimer()
-    } else {
-      clearInterval(intervalId)
+      setCurrTime(currTime => currTime-1)
     }
-    return () => clearInterval(intervalId)
   }, [playing])
-
-  useEffect(() => {
-    if (timer == 0) {
-      setPlaying(false)
-    }
-  }, [timer])
-  
+ 
   function handleScreenClick() {
     if (playing) {
-      clearInterval(intervalId)
-      setTimer(TIME)
-      startTimer()
+      nextPlayer()
+      resetTimer()
     }
+  }
+
+  function handlePlayClick() {
+    if (currTime > 999) {
+      setPlaying(playing => !playing)
+    } else if (!playing) {
+      setPlaying(true)
+      nextPlayer()
+      resetTimer()
+    }
+  }
+
+  function removePlayer() {
+    setTotalPlayers((totalPlayers) => {
+      return (totalPlayers > 2) ? totalPlayers-1 : totalPlayers
+    })
+  }
+
+  function addPlayer() {
+    setTotalPlayers((totalPlayers) => {
+      return (totalPlayers < 4) ? totalPlayers+1 : totalPlayers
+    })
+  }
+
+  function nextPlayer() {
+    setCurrentPlayer((currentPlayer) => {
+      return (currentPlayer < totalPlayers-1) ? currentPlayer + 1 : 0
+    })
   }
 
   return (
-    <div className='main'>
-      <p
-        className={timer == 0 ? "red" : ""}
-        onClick={handleScreenClick}
-      >{timer}</p>
-      <button onClick={() => {setPlaying(playing => !playing)}}>{playing ? "Pause" : "Start"}</button>
+    <div className={"app " + COLORS[currentPlayer]}>
+      <div className="playerWrapper">
+        <button className="plussminus" onClick={removePlayer}>-</button>
+
+        {[...Array(totalPlayers)].map((_, index) => {
+          const className = "player " + COLORS[index]
+          return <div className={className} key={index}></div>
+        })}
+
+        <button className="plussminus" onClick={addPlayer}>+</button>
+      </div>
+      <div className="timerWrapper" onClick={handleScreenClick}>
+        <p className="timer" >{Math.floor(currTime / 1000)}</p>
+        {/* <p className="timer" >{currTime}</p> */}
+      </div>
+      <button className="startpause" onClick={handlePlayClick}>{playing ? "Pause" : "Start"}</button>
     </div>
   )
 }
