@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import './App.css'
 
 function App() {
-  const TIME = 60 * 1000 + 999
+  const TIME = 60 * 1000
 
   const COLORS = ["red", "green", "blue", "orange"]
 
@@ -11,18 +11,20 @@ function App() {
 
   const intervalID = useRef<number>() 
 
+  const startTime = useRef(Date.now())
+  const remainingTime = useRef(TIME)
+
   const [currentPlayer, setCurrentPlayer] = useState(0)
   const [totalPlayers, setTotalPlayers] = useState(4)
 
   useEffect(() => {
     if (playing) {
-      if (currTime <= 999) {
+      if (currTime <= 0) {
         setPlaying(false)
       }
       
-      let startTime = Date.now()
       intervalID.current = setInterval(() => {              
-        setCurrTime(currTime => currTime - (Date.now() - startTime))
+        setCurrTime(remainingTime.current - (Date.now() - startTime.current))
       })
       return () => clearInterval(intervalID.current)
     }
@@ -30,11 +32,15 @@ function App() {
 
   function resetTimer() {
     clearInterval(intervalID.current)
+    startTime.current = Date.now()
+    remainingTime.current = TIME
     setCurrTime(TIME)
   }
   
   useEffect(() => {
     if (playing) {
+      startTime.current = Date.now()
+      remainingTime.current = currTime
       setCurrTime(currTime => currTime-1)
     }
   }, [playing])
@@ -47,7 +53,7 @@ function App() {
   }
 
   function handlePlayClick() {
-    if (currTime > 999) {
+    if (currTime > 0) {
       setPlaying(playing => !playing)
     } else if (!playing) {
       setPlaying(true)
@@ -87,7 +93,7 @@ function App() {
         <button className="plussminus" onClick={addPlayer}>+</button>
       </div>
       <div className="timerWrapper" onClick={handleScreenClick}>
-        <p className="timer" >{Math.floor(currTime / 1000)}</p>
+        <p className="timer" >{Math.ceil(currTime / 1000)}</p>
         {/* <p className="timer" >{currTime}</p> */}
       </div>
       <button className="startpause" onClick={handlePlayClick}>{playing ? "Pause" : "Start"}</button>
