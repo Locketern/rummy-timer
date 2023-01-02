@@ -2,17 +2,17 @@ import { useEffect, useRef, useState } from 'react'
 import './App.css'
 
 function App() {
-  const TIME = 60 * 1000
+  const [totalTime, setTotalTime] = useState(60000)
 
   const COLORS = ["red", "green", "blue", "orange"]
 
-  const [currTime, setCurrTime] = useState(TIME)
+  const [currTime, setCurrTime] = useState(totalTime)
   const [playing, setPlaying] = useState(false)
 
   const intervalID = useRef<number>() 
 
   const startTime = useRef(Date.now())
-  const remainingTime = useRef(TIME)
+  const remainingTime = useRef(totalTime)
 
   const [currentPlayer, setCurrentPlayer] = useState(0)
   const [totalPlayers, setTotalPlayers] = useState(4)
@@ -33,8 +33,8 @@ function App() {
   function resetTimer() {
     clearInterval(intervalID.current)
     startTime.current = Date.now()
-    remainingTime.current = TIME
-    setCurrTime(TIME)
+    remainingTime.current = totalTime
+    setCurrTime(totalTime)
   }
   
   useEffect(() => {
@@ -61,6 +61,24 @@ function App() {
       resetTimer()
     }
   }
+
+  function handleResetClick() {
+    setPlaying(false)
+    if (totalTime != 60000) {
+      setTotalTime(60000)
+    } else {
+      resetTimer()
+    }
+  }
+  
+  function handleAddTimeClick() {
+    setPlaying(false)
+    setTotalTime(currTotalTime => currTotalTime + 30000)
+  }
+
+  useEffect(() => {
+    resetTimer()
+  }, [totalTime])
 
   function removePlayer() {
     setTotalPlayers((totalPlayers) => {
@@ -93,10 +111,14 @@ function App() {
         <button className="plussminus" onClick={addPlayer}>+</button>
       </div>
       <div className="timerWrapper" onClick={handleScreenClick}>
-        <p className="timer" >{Math.ceil(currTime / 1000)}</p>
+        <p className="timer">{Math.ceil(currTime / 1000)}</p>
         {/* <p className="timer" >{currTime}</p> */}
       </div>
-      <button className="startpause" onClick={handlePlayClick}>{playing ? "Pause" : "Start"}</button>
+      <div className="bottomWrapper">
+        <button onClick={handleResetClick}>Reset</button>
+        <button className="startpause" onClick={handlePlayClick}>{playing ? "Pause" : "Start"}</button>
+        <button onClick={handleAddTimeClick}>+30</button>
+      </div>
     </div>
   )
 }
