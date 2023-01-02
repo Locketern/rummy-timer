@@ -1,5 +1,6 @@
 {
   "name": "rummy-timer",
+  "homepage": "https://locketern.github.io/rummy-timer/",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,6 +8,8 @@
     "dev": "vite",
     "host": "vite --host",
     "build": "tsc && vite build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -17,6 +20,7 @@
     "@types/react": "^18.0.26",
     "@types/react-dom": "^18.0.9",
     "@vitejs/plugin-react": "^3.0.0",
+    "gh-pages": "^4.0.0",
     "typescript": "^4.9.3",
     "vite": "^4.0.0"
   }
