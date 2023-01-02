@@ -117,7 +117,7 @@ function App() {
       <div className="bottomWrapper">
         <button onClick={handleResetClick}>Reset</button>
         <button className="startpause" onClick={handlePlayClick}>{playing ? "Pause" : "Start"}</button>
-        <button onClick={handleAddTimeClick}>+30</button>
+        <button onClick={handleAddTimeClick}>+30s</button>
       </div>
     </div>
   )
