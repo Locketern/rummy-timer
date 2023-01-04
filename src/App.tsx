@@ -4,7 +4,9 @@ import './App.css'
 function App() {
   const [totalTime, setTotalTime] = useState(60000)
 
-  const COLORS = ["red", "green", "blue", "orange"]
+  const [colors, setColors] = useState(["red", "green", "blue", "orange"])
+
+  const [clickedColorIndex, setClickedColorIndex] = useState<number>()
 
   const [currTime, setCurrTime] = useState(totalTime)
   const [playing, setPlaying] = useState(false)
@@ -80,6 +82,25 @@ function App() {
     resetTimer()
   }, [totalTime])
 
+  function handleColorClick(colorIndex: number) {
+    if (clickedColorIndex != undefined) {
+      if (clickedColorIndex === colorIndex) {
+        setClickedColorIndex(undefined)
+      } else {
+        setColors(colors => {
+          let r = [...colors]
+          let t = r[colorIndex]
+          r[colorIndex] = r[clickedColorIndex]
+          r[clickedColorIndex] = t
+          return r
+        })
+        setClickedColorIndex(undefined)
+      }
+    } else {
+      setClickedColorIndex(colorIndex)
+    }
+  }
+
   function removePlayer() {
     setTotalPlayers((totalPlayers) => {
       return (totalPlayers > 2) ? totalPlayers-1 : totalPlayers
@@ -99,13 +120,13 @@ function App() {
   }
 
   return (
-    <div className={"app " + COLORS[currentPlayer]}>
+    <div className={"app " + colors[currentPlayer]}>
       <div className="playerWrapper">
         <button className="plussminus" onClick={removePlayer}>-</button>
 
         {[...Array(totalPlayers)].map((_, index) => {
-          const className = "player " + COLORS[index]
-          return <div className={className} key={index}></div>
+          const className = "player " + colors[index]
+          return <div className={className} onClick={() => handleColorClick(index)} key={index}></div>
         })}
 
         <button className="plussminus" onClick={addPlayer}>+</button>
