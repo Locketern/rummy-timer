@@ -125,7 +125,7 @@ function App() {
         <button className="plussminus" onClick={removePlayer}>-</button>
 
         {[...Array(totalPlayers)].map((_, index) => {
-          const className = "player " + colors[index]
+          const className = `player ${colors[index]} ${index === clickedColorIndex ? "selected" : ""}` 
           return <div className={className} onClick={() => handleColorClick(index)} key={index}></div>
         })}
 

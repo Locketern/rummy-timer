@@ -72,6 +72,11 @@
   top: 4em;
 }
 
+.selected {
+  box-sizing: border-box;
+  border: 2px #1a1a1a solid;
+}
+
 .red {
   background-color: #d82e3f;
 }
